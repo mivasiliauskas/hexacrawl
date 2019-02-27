@@ -6,21 +6,18 @@ public class HexMesh : MonoBehaviour
 {
 
     Mesh hexMesh;
-    List<Vector3> vertices;
-    List<int> triangles;
 
-List<Color> colors;
+    static List<Vector3> vertices = new List<Vector3>();
+    static List<Color> colors = new List<Color>();
+    static List<int> triangles = new List<int>();
 
     MeshCollider meshCollider;
 
     void Awake()
     {
         GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
-		meshCollider = gameObject.AddComponent<MeshCollider>();
+        meshCollider = gameObject.AddComponent<MeshCollider>();
         hexMesh.name = "Hex Mesh";
-        vertices = new List<Vector3>();
-		colors = new List<Color>();
-        triangles = new List<int>();
     }
 
     public void Triangulate(HexCell[] cells)
@@ -34,31 +31,33 @@ List<Color> colors;
             Triangulate(cells[i]);
         }
         hexMesh.vertices = vertices.ToArray();
-		hexMesh.colors = colors.ToArray();
+        hexMesh.colors = colors.ToArray();
         hexMesh.triangles = triangles.ToArray();
         hexMesh.RecalculateNormals();
-        
-		meshCollider.sharedMesh = hexMesh;
+
+        meshCollider.sharedMesh = hexMesh;
     }
 
     void Triangulate(HexCell cell)
     {
         Vector3 center = cell.transform.localPosition;
-		for (int i = 0; i < 6; i++) {
-			AddTriangle(
-				center,
-				center + HexMetrics.corners[i],
-				center + HexMetrics.corners[i + 1]
+        for (int i = 0; i < 6; i++)
+        {
+            AddTriangle(
+                center,
+                center + HexMetrics.corners[i],
+                center + HexMetrics.corners[i + 1]
             );
-			AddTriangleColor(cell.color);
-        }	
+            AddTriangleColor(cell.color);
+        }
     }
 
-	void AddTriangleColor (Color color) {
-		colors.Add(color);
-		colors.Add(color);
-		colors.Add(color);
-	}
+    void AddTriangleColor(Color color)
+    {
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
+    }
 
     void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3)
     {
