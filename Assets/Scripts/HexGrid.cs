@@ -65,7 +65,18 @@ public class HexGrid : MonoBehaviour
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
         cell.color = defaultColor;
-        cell.entity = new Player(cell);
+
+        Entity entity = null;
+        if (x == cellCountX / 2 && z == cellCountZ / 2)
+        {
+            entity = new Player(cell);
+        }
+        else
+        {
+            entity = new None(cell);
+        }
+        cell.entity = entity;
+
         /*
         Text label = Instantiate<Text>(cellLabelPrefab);
         label.rectTransform.anchoredPosition =
