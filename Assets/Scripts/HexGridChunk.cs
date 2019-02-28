@@ -1,32 +1,38 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class HexGridChunk : MonoBehaviour {
-    
-	HexCell[] cells;
+public class HexGridChunk : MonoBehaviour
+{
+    HexCell[] cells;
 
-	HexMesh hexMesh;
-	Canvas gridCanvas;
+    HexMesh hexMesh;
 
-	void Awake () {
-		gridCanvas = GetComponentInChildren<Canvas>();
-		hexMesh = GetComponentInChildren<HexMesh>();
+    Canvas gridCanvas;
 
-		cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
-	}
-	
-	void Start () {
-		hexMesh.Triangulate(cells);
-	}
+    void Awake()
+    {
+        gridCanvas = GetComponentInChildren<Canvas>();
+        hexMesh = GetComponentInChildren<HexMesh>();
 
-  public void AddCell (int index, HexCell cell) {
-		cells[index] = cell;
-		cell.transform.SetParent(transform, false);
-		cell.uiRect.SetParent(gridCanvas.transform, false);
-		cell.chunk = this;
-	}
+        cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
+    }
 
-	public void Triangulate(){
-		hexMesh.Triangulate(cells);
-	}
+    void Start()
+    {
+        hexMesh.Triangulate(cells);
+    }
+
+    public void AddCell(int index, HexCell cell)
+    {
+        cells[index] = cell;
+        cell.transform.SetParent(transform, false);
+        if (cell.uiRect != null)
+            cell.uiRect.SetParent(gridCanvas.transform, false);
+        cell.chunk = this;
+    }
+
+    public void Triangulate()
+    {
+        hexMesh.Triangulate(cells);
+    }
 }
