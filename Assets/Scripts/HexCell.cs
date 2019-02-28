@@ -13,6 +13,9 @@ public class HexCell : MonoBehaviour
     public RectTransform uiRect;
 
     public HexGridChunk chunk;
+
+    public Entity entity;
+
     AudioSource audioSource;
 
     Transform sprite;
