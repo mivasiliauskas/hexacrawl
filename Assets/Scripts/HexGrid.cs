@@ -8,6 +8,7 @@ public class HexGrid : MonoBehaviour
 
     public Color defaultColor = Color.white;
     public Color touchedColor = Color.magenta;
+    public Color highlightColor = Color.green;
 
     public HexGridChunk chunkPrefab;
 
@@ -105,6 +106,8 @@ public class HexGrid : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             HandleInput();
+        }else {
+            HandleMouseMove();
         }
     }
 
@@ -117,6 +120,41 @@ public class HexGrid : MonoBehaviour
         {
             TouchCell(hit.point);
         }
+    }
+
+
+    void HandleMouseMove()
+    {
+        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(inputRay, out hit))
+        {
+            HighlightCell(hit.point);
+        }
+    }
+
+    HexCell activeCell;
+    
+    Color previousColor;
+
+    void HighlightCell(Vector3 position)
+    {
+        position = transform.InverseTransformPoint(position);
+        HexCoordinates coordinates = HexCoordinates.FromPosition(position);
+        int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
+        HexCell cell = cells[index];
+
+
+        if (activeCell != null && activeCell.color.Equals(highlightColor)){
+            activeCell.color = previousColor;
+            activeCell.chunk.Triangulate();
+        }
+        activeCell = cell;
+        previousColor = cell.color;
+
+        cell.color = highlightColor;
+        cell.chunk.Triangulate();
     }
 
     void TouchCell(Vector3 position)
