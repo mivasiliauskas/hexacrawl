@@ -42,6 +42,10 @@ public struct HexCoordinates
         return new HexCoordinates(x - z / 2, z);
     }
 
+    public int ToIndex(int cellCountX ) {
+        return X + Z * cellCountX + Z / 2;
+    }
+
     public static HexCoordinates FromPosition(Vector3 position)
     {
         float x = position.x / (HexMetrics.innerRadius * 2f);

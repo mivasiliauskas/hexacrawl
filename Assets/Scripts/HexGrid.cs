@@ -60,11 +60,37 @@ public class HexGrid : MonoBehaviour
         position.y = 0f;
         position.z = z * (HexMetrics.outerRadius * 1.5f);
 
-
         HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
         cell.baseColor = defaultColor;
+
+        int sw = new HexCoordinates(cell.coordinates.X, cell.coordinates.Z - 1).ToIndex(cellCountX);
+        int se = new HexCoordinates(cell.coordinates.X + 1, cell.coordinates.Z - 1).ToIndex(cellCountX);
+
+        if (cell.coordinates.X - cell.coordinates.Y > 1)
+        {
+            // cell.baseColor = Color.blue;
+            int index = new HexCoordinates(cell.coordinates.X - 1, cell.coordinates.Z).ToIndex(cellCountX);
+            cell.neighbours.Add(HexDirection.W, cells[index]);
+            cells[index].neighbours.Add(HexDirection.E, cell);
+        }
+
+        if (cell.coordinates.Z != 0 && cell.coordinates.X != cell.coordinates.Y)
+        {
+            // cell.baseColor = Color.blue;
+            int index = new HexCoordinates(cell.coordinates.X, cell.coordinates.Z - 1).ToIndex(cellCountX);
+            cell.neighbours.Add(HexDirection.SW, cells[index]);
+            cells[index].neighbours.Add(HexDirection.NE, cell);
+        }
+
+        if (cell.coordinates.Z != 0 && cell.coordinates.X - cell.coordinates.Y + 1 != cellCountX * 2)
+        {
+            // cell.baseColor = Color.blue;
+            int index = new HexCoordinates(cell.coordinates.X + 1, cell.coordinates.Z - 1).ToIndex(cellCountX);
+            cell.neighbours.Add(HexDirection.SE, cells[index]);
+            cells[index].neighbours.Add(HexDirection.NW, cell);
+        }
 
         Entity entity = null;
         if (x == cellCountX / 2 && z == cellCountZ / 2)
@@ -106,7 +132,7 @@ public class HexGrid : MonoBehaviour
         {
             HandleInput();
         }
-            HandleMouseMove();
+        HandleMouseMove();
     }
 
     void HandleInput()
@@ -133,7 +159,7 @@ public class HexGrid : MonoBehaviour
     }
 
     HexCell activeCell;
-    
+
     Color previousColor;
 
     void HighlightCell(Vector3 position)
@@ -144,7 +170,8 @@ public class HexGrid : MonoBehaviour
         HexCell cell = cells[index];
 
 
-        if (activeCell != null && activeCell.highlighted){
+        if (activeCell != null && activeCell.highlighted)
+        {
             activeCell.highlighted = false;
             activeCell.chunk.Triangulate();
         }
@@ -158,9 +185,18 @@ public class HexGrid : MonoBehaviour
     {
         position = transform.InverseTransformPoint(position);
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
-        int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
+        int index = coordinates.ToIndex(cellCountX);
         HexCell cell = cells[index];
         cell.baseColor = touchedColor;
         cell.chunk.Triangulate();
+
+        foreach(HexCell neighbour in cell.neighbours.Values){
+            neighbour.baseColor = touchedColor;
+
+            // TODO duplicate triangulate....
+            // could store in set and triangulate all in set
+            // could set dirty and update dirty chunks in their update loops
+            neighbour.chunk.Triangulate();
+        }
     }
 }

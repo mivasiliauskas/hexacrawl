@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+
+using UnityEngine;
 
 public class HexCell : MonoBehaviour
 {
@@ -27,4 +29,6 @@ public class HexCell : MonoBehaviour
     public HexGridChunk chunk;
 
     public Entity entity;
+
+    public Dictionary<HexDirection, HexCell> neighbours = new Dictionary<HexDirection, HexCell>();
 }
