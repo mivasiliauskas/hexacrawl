@@ -8,7 +8,6 @@ public class HexGrid : MonoBehaviour
 
     public Color defaultColor = Color.white;
     public Color touchedColor = Color.magenta;
-    public Color highlightColor = Color.green;
 
     public HexGridChunk chunkPrefab;
 
@@ -65,7 +64,7 @@ public class HexGrid : MonoBehaviour
         HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
-        cell.color = defaultColor;
+        cell.baseColor = defaultColor;
 
         Entity entity = null;
         if (x == cellCountX / 2 && z == cellCountZ / 2)
@@ -106,9 +105,8 @@ public class HexGrid : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             HandleInput();
-        }else {
-            HandleMouseMove();
         }
+            HandleMouseMove();
     }
 
     void HandleInput()
@@ -146,14 +144,13 @@ public class HexGrid : MonoBehaviour
         HexCell cell = cells[index];
 
 
-        if (activeCell != null && activeCell.color.Equals(highlightColor)){
-            activeCell.color = previousColor;
+        if (activeCell != null && activeCell.highlighted){
+            activeCell.highlighted = false;
             activeCell.chunk.Triangulate();
         }
         activeCell = cell;
-        previousColor = cell.color;
 
-        cell.color = highlightColor;
+        cell.highlighted = true;
         cell.chunk.Triangulate();
     }
 
@@ -163,7 +160,7 @@ public class HexGrid : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
         int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
         HexCell cell = cells[index];
-        cell.color = touchedColor;
+        cell.baseColor = touchedColor;
         cell.chunk.Triangulate();
     }
 }
