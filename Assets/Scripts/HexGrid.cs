@@ -102,7 +102,7 @@ public class HexGrid : MonoBehaviour
             cells[index].neighbours.Add(HexDirection.NW, cell);
         }
 
-        cell.entity = new None(cell);
+        cell.entity = new Monster(cell);
 
         /*
         Text label = Instantiate<Text>(cellLabelPrefab);
