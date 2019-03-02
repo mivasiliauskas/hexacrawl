@@ -9,11 +9,13 @@ public class SpriteLoader
     static Sprite[] characters;
     static Sprite[] monsters;
 
+    public static Sprite[] sprites;
+
     static System.Random random = new System.Random();
 
     static SpriteLoader()
     {
-        Sprite[] sprites =  Resources.LoadAll<Sprite>("Sprites");
+        sprites =  Resources.LoadAll<Sprite>("Sprites");
         characters = sprites.Where(s => s.name.StartsWith("characters")).ToArray<Sprite>();
         monsters = sprites.Where(s => s.name.StartsWith("monsters")).ToArray<Sprite>();
     }

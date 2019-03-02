@@ -2,7 +2,6 @@
 
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
 
 public class HexGrid : MonoBehaviour
 {
@@ -220,7 +219,9 @@ public class HexGrid : MonoBehaviour
         int index = coordinates.ToIndex(cellCountX);
         HexCell cell = cells[index];
 
-        Selection.activeGameObject = cell.gameObject;
+#if UNITY_EDITOR
+        UnityEditor.Selection.activeGameObject = cell.gameObject;
+#endif
     }
 
     Dictionary<KeyCode, HexDirection> keyDirections = new Dictionary<KeyCode, HexDirection>(){
