@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+
+using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class HexGrid : MonoBehaviour
 {
@@ -17,6 +20,8 @@ public class HexGrid : MonoBehaviour
     HexGridChunk[] chunks;
 
     public Text cellLabelPrefab;
+
+    HexCell playerCell;
 
     void Awake()
     {
@@ -51,6 +56,10 @@ public class HexGrid : MonoBehaviour
                 CreateCell(x, z, i++);
             }
         }
+
+        playerCell = cells[cells.Length / 2];
+        playerCell.entity = new Player(playerCell);
+        playerCell.SetNeighboursAllowed(true);
     }
 
     void CreateCell(int x, int z, int i)
@@ -68,6 +77,7 @@ public class HexGrid : MonoBehaviour
         int sw = new HexCoordinates(cell.coordinates.X, cell.coordinates.Z - 1).ToIndex(cellCountX);
         int se = new HexCoordinates(cell.coordinates.X + 1, cell.coordinates.Z - 1).ToIndex(cellCountX);
 
+        // set neighbours
         if (cell.coordinates.X - cell.coordinates.Y > 1)
         {
             // cell.baseColor = Color.blue;
@@ -92,16 +102,7 @@ public class HexGrid : MonoBehaviour
             cells[index].neighbours.Add(HexDirection.NW, cell);
         }
 
-        Entity entity = null;
-        if (x == cellCountX / 2 && z == cellCountZ / 2)
-        {
-            entity = new Player(cell);
-        }
-        else
-        {
-            entity = new None(cell);
-        }
-        cell.entity = entity;
+        cell.entity = new None(cell);
 
         /*
         Text label = Instantiate<Text>(cellLabelPrefab);
@@ -133,6 +134,37 @@ public class HexGrid : MonoBehaviour
             HandleInput();
         }
         HandleMouseMove();
+        foreach (KeyCode keyCode in keyDirections.Keys)
+        {
+            if (Input.GetKeyDown(keyCode))
+            {
+                HandlePlayerMovement(keyDirections[keyCode]);
+            }
+        }
+    }
+
+    void HandlePlayerMovement(HexDirection direction)
+    {
+        if (playerCell.neighbours.ContainsKey(direction))
+        {
+            playerCell.SetNeighboursAllowed(false);
+
+            HexCell neighbour = playerCell.neighbours[direction];
+
+            // switch entities
+            Entity neighbourEntity = neighbour.entity;
+            neighbour.entity = playerCell.entity;
+            playerCell.entity = neighbourEntity;
+
+            // switch transforms
+            Transform neighbourSprite = neighbour.Sprite;
+            playerCell.Sprite.SetParent(neighbour.transform, false);
+            neighbourSprite.SetParent(playerCell.transform, false);
+
+            playerCell = neighbour;
+
+            playerCell.SetNeighboursAllowed(true);
+        }
     }
 
     void HandleInput()
@@ -187,16 +219,16 @@ public class HexGrid : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
         int index = coordinates.ToIndex(cellCountX);
         HexCell cell = cells[index];
-        cell.baseColor = touchedColor;
-        cell.chunk.Triangulate();
 
-        foreach(HexCell neighbour in cell.neighbours.Values){
-            neighbour.baseColor = touchedColor;
-
-            // TODO duplicate triangulate....
-            // could store in set and triangulate all in set
-            // could set dirty and update dirty chunks in their update loops
-            neighbour.chunk.Triangulate();
-        }
+        Selection.activeGameObject = cell.gameObject;
     }
+
+    Dictionary<KeyCode, HexDirection> keyDirections = new Dictionary<KeyCode, HexDirection>(){
+        {KeyCode.E, HexDirection.NE},
+        {KeyCode.D, HexDirection.E},
+        {KeyCode.C, HexDirection.SE},
+        {KeyCode.Z, HexDirection.SW},
+        {KeyCode.A, HexDirection.W},
+        {KeyCode.Q, HexDirection.NW},
+    };
 }

@@ -5,7 +5,7 @@ public class HexMapCamera : MonoBehaviour
 
     Transform swivel, stick;
 
-    float zoom = 1f;
+    public float zoom = 0f;
 
     public float stickMinZoom = -250;
     public float stickMaxZoom = -45;
@@ -73,7 +73,6 @@ public class HexMapCamera : MonoBehaviour
     void AdjustZoom(float delta)
     {
         zoom = Mathf.Clamp01(zoom + delta);
-
 
         float distance = Mathf.Lerp(stickMinZoom, stickMaxZoom, zoom);
         stick.localPosition = new Vector3(0f, 0f, distance);

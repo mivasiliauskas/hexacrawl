@@ -9,6 +9,8 @@ public class HexGridChunk : MonoBehaviour
 
     Canvas gridCanvas;
 
+    bool isDirty;
+
     void Awake()
     {
         gridCanvas = GetComponentInChildren<Canvas>();
@@ -20,6 +22,15 @@ public class HexGridChunk : MonoBehaviour
     void Start()
     {
         hexMesh.Triangulate(cells);
+    }
+
+    void Update()
+    {
+        if (isDirty)
+        {
+            Triangulate();
+            isDirty = false;
+        }
     }
 
     public void AddCell(int index, HexCell cell)
@@ -34,5 +45,9 @@ public class HexGridChunk : MonoBehaviour
     public void Triangulate()
     {
         hexMesh.Triangulate(cells);
+    }
+
+    public void Dirty(){
+        isDirty = true;
     }
 }
