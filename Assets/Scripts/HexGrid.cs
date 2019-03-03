@@ -142,10 +142,7 @@ public class HexGrid : MonoBehaviour
 
     void HandlePlayerMovement(HexDirection direction)
     {
-        if (Game.Player.parent.neighbours.ContainsKey(direction))
-        {
-            Game.Player.Move(direction);
-        }
+        Game.Player.Move(direction);
     }
 
     void HandleInput()
