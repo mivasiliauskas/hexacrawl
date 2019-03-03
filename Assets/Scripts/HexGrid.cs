@@ -146,6 +146,8 @@ public class HexGrid : MonoBehaviour
     {
         if (playerCell.neighbours.ContainsKey(direction))
         {
+            GameObject.Find("Scene").GetComponent<AudioSource>().PlayOneShot(playerCell.entity.moveSound);
+        
             playerCell.SetNeighboursAllowed(false);
 
             HexCell neighbour = playerCell.neighbours[direction];
