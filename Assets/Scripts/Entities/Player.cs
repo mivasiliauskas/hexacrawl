@@ -5,8 +5,11 @@ using System.Linq;
 using UnityEngine;
 public class Player : Entity
 {
-    public Player(Component parent) : base(parent)
+    public Player(HexCell parent) : base(parent)
     {
+        this.view = new EntityView("player");
+        this.model = new EntityModel("player");
+
         var sprite = SpriteLoader.sprites.First(s => s.name.StartsWith("hiwky"));
         if (sprite == null)
         {

@@ -20,8 +20,6 @@ public class HexGrid : MonoBehaviour
 
     public Text cellLabelPrefab;
 
-    HexCell playerCell;
-
     void Awake()
     {
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
@@ -56,9 +54,9 @@ public class HexGrid : MonoBehaviour
             }
         }
 
-        playerCell = cells[cells.Length / 2];
-        playerCell.entity = new Player(playerCell);
-        playerCell.SetNeighboursAllowed(true);
+        var cell = cells[cells.Length / 2];
+        Game.Player = new Player(cell);
+        Game.Player.parent.SetNeighboursAllowed(true);
     }
 
     void CreateCell(int x, int z, int i)
@@ -101,7 +99,7 @@ public class HexGrid : MonoBehaviour
             cells[index].neighbours.Add(HexDirection.NW, cell);
         }
 
-        cell.entity = new Monster(cell);
+        cell.entity = new Monster(cell, "monster_1");
 
         /*
         Text label = Instantiate<Text>(cellLabelPrefab);
@@ -144,27 +142,9 @@ public class HexGrid : MonoBehaviour
 
     void HandlePlayerMovement(HexDirection direction)
     {
-        if (playerCell.neighbours.ContainsKey(direction))
+        if (Game.Player.parent.neighbours.ContainsKey(direction))
         {
-            GameObject.Find("Scene").GetComponent<AudioSource>().PlayOneShot(playerCell.entity.moveSound);
-        
-            playerCell.SetNeighboursAllowed(false);
-
-            HexCell neighbour = playerCell.neighbours[direction];
-
-            // switch entities
-            Entity neighbourEntity = neighbour.entity;
-            neighbour.entity = playerCell.entity;
-            playerCell.entity = neighbourEntity;
-
-            // switch transforms
-            Transform neighbourSprite = neighbour.Sprite;
-            playerCell.Sprite.SetParent(neighbour.transform, false);
-            neighbourSprite.SetParent(playerCell.transform, false);
-
-            playerCell = neighbour;
-
-            playerCell.SetNeighboursAllowed(true);
+            Game.Player.Move(direction);
         }
     }
 
