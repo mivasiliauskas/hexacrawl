@@ -8,12 +8,15 @@ public class HexGrid : MonoBehaviour
     public int chunkCountX = 4, chunkCountZ = 3;
     int cellCountX, cellCountZ;
 
+
     public Color defaultColor = Color.white;
     public Color touchedColor = Color.magenta;
 
     public HexGridChunk chunkPrefab;
 
     public HexCell cellPrefab;
+
+    System.Random random = new System.Random();
 
     HexCell[] cells;
     HexGridChunk[] chunks;
@@ -99,8 +102,14 @@ public class HexGrid : MonoBehaviour
             cells[index].neighbours.Add(HexDirection.NW, cell);
         }
 
-        cell.entity = new Monster(cell, "monster_1");
-
+        if (random.Next(0, 6) == 0)
+        {
+            cell.entity = new Potion(cell, "potion_0");
+        }
+        else
+        {
+            cell.entity = new Monster(cell, "monster_1");
+        }
         /*
         Text label = Instantiate<Text>(cellLabelPrefab);
         label.rectTransform.anchoredPosition =

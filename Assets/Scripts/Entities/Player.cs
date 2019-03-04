@@ -3,13 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
+using UnityEngine.UI;
+
 public class Player : Entity
 {
-    
-    public Player(HexCell parent) : base(parent)
+
+    public int Health
     {
-        this.view = new EntityView("player");
-        this.model = new EntityModel("player");
+        get
+        {
+            return model.Health;
+        }
+        set
+        {
+            if (model.model.MaxHealth < value)
+            {
+                value = model.model.MaxHealth;
+            }
+            model.Health = value;
+
+            GameObject.Find("HUD").transform.Find("Health").FindDeepChild("Value").GetComponent<Text>().text = value.ToString();
+
+            if (value <= 0)
+            {
+                Game.ForceGameOver();
+            }
+        }
+    }
+
+    public Player(HexCell parent) : base(parent, "player")
+    {
+        // makes little sense
+        Health = this.model.Health;
 
         var sprite = SpriteLoader.sprites.First(s => s.name.StartsWith("hiwky"));
         if (sprite == null)
@@ -28,26 +53,51 @@ public class Player : Entity
 
         HexCell neighbour = this.parent.neighbours[direction];
 
-        model.Health -= neighbour.entity.model.Health;
-
-        if (model.Health < 0 ) {
-            Game.ForceGameOver();
-        }
-
         AudioManager.audioSource.PlayOneShot(this.view.view.moveSound);
+
         this.parent.SetNeighboursAllowed(false);
 
-        // switch entities
-        Entity neighbourEntity = neighbour.entity;
-        neighbour.entity = this;
-        this.parent.entity = neighbourEntity;
+        if (neighbour.entity is Monster)
+        {
+            Health -= neighbour.entity.model.Health;
 
-        // switch transforms
-        Transform neighbourSprite = neighbour.Sprite;
-        this.parent.Sprite.SetParent(neighbour.transform, false);
-        neighbourSprite.SetParent(this.parent.transform, false);
+            // switch entities
+            Entity neighbourEntity = neighbour.entity;
+            neighbour.entity = this;
+            this.parent.entity = neighbourEntity;
 
-        this.parent = neighbour;
+            // switch transforms
+            Transform neighbourSprite = neighbour.Sprite;
+            this.parent.Sprite.SetParent(neighbour.transform, false);
+            neighbourSprite.SetParent(this.parent.transform, false);
+
+            this.parent = neighbour;
+        }
+        else if (neighbour.entity is Potion)
+        {
+            Health += neighbour.entity.model.Health;
+
+            this.parent.entity = new None(this.parent);
+            neighbour.entity = this;
+
+            Object.Destroy(neighbour.Sprite.gameObject);
+            this.parent.Sprite.SetParent(neighbour.transform, false);
+
+            this.parent = neighbour;
+        }
+        else if (neighbour.entity is None)
+        {
+
+            // switch entities
+            Entity neighbourEntity = neighbour.entity;
+            neighbour.entity = this;
+            this.parent.entity = neighbourEntity;
+
+            // switch transforms
+            this.parent.Sprite.SetParent(neighbour.transform, false);
+
+            this.parent = neighbour;
+        }
 
         this.parent.SetNeighboursAllowed(true);
     }

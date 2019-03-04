@@ -4,26 +4,20 @@ using UnityEngine;
 
 public class EntityModelTemplate
 {
-    static System.Random random = new System.Random();
-
     public string Name { get; private set; }
     public int MaxHealth { get; private set; }
 
-    public EntityModelTemplate(string name, int health)
+    public EntityModelTemplate(string name, int health = 0)
     {
         Name = name;
         MaxHealth = health;
     }
 
     public static List<EntityModelTemplate> characters = new List<EntityModelTemplate>(){
-        new EntityModelTemplate("player", 10),
-        new EntityModelTemplate("monster_1", 10),
-        new EntityModelTemplate("monster_2", 20),
+        new EntityModelTemplate("none", 0),
+        new EntityModelTemplate("player", 3),
+        new EntityModelTemplate("monster_1", 1),
+        new EntityModelTemplate("monster_2", 2),
+        new EntityModelTemplate("potion_0", 1),
     };
-
-    public static EntityModelTemplate GetRandomMonster()
-    {
-        return characters[random.Next(characters.Count)];
-    }
-
 }

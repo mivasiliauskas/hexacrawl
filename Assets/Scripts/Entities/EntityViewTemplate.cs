@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class EntityViewTemplate
 {
-
-    static System.Random random = new System.Random();
-
     public AudioClip moveSound;
 
     public string Name { get; private set; }
@@ -18,9 +15,11 @@ public class EntityViewTemplate
     }
 
     public static List<EntityViewTemplate> characters = new List<EntityViewTemplate>(){
+        new EntityViewTemplate("none"),
         new EntityViewTemplate("player"),
         new EntityViewTemplate("monster_1"),
         new EntityViewTemplate("monster_2"),
+        new EntityViewTemplate("potion_0"),
     };
 
 }
